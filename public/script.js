@@ -1,9 +1,8 @@
 var correctSequence = [];
 var inputSequence = [];
 var score;
-var highscore = 0;
+var highscore = localStorage.getItem('highscore')||0;
 var gameActive = false;
-
 
 let yellowButton = document.getElementById('yellowButton');
 let blueButton = document.getElementById('blueButton');
@@ -12,6 +11,8 @@ let greenButton = document.getElementById('greenButton');
 let startButton = document.getElementById('startButton');
 let htmlScore = document.getElementById('score');
 let htmlHighscore = document.getElementById('highscore');
+
+htmlHighscore.innerHTML = "High Score: " + highscore;
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -27,6 +28,16 @@ startButton.addEventListener("click", function() {
   score = -1;
   nextLevel();
 });
+
+function updateHighScore()
+{
+  if(score>highscore)
+  {
+    highscore = score;
+    localStorage.setItem('highscore', highscore);
+  }
+  htmlHighscore.innerHTML = "High Score: " + highscore;
+}
 
 function displaySequence() {
   yellowButton.disabled = true;
@@ -98,13 +109,14 @@ greenButton.addEventListener("click", function() {
 function nextLevel() {
   score++;
   highscore = Math.max(score, highscore);
+  localStorage.setItem('highscore', highscore);
   var num = getRandomInt(1, 5);
   console.log(num);
   correctSequence.push(num);
   displaySequence();
   inputSequence = [];
   htmlScore.innerHTML = "Score: " + score;
-  htmlHighscore.innerHTML = "Highscore: " + highscore;
+  updateHighScore();
 }
 
 function fail() {
@@ -112,6 +124,7 @@ function fail() {
   correctSequence = [];
   inputSequence = [];
   startButton.disabled = false;
+  document.getElementById('failMessage').innerHTML = "You failed!";
 }
 
 function changeColor(color) {
