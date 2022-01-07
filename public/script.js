@@ -1,9 +1,8 @@
 var correctSequence = [];
 var inputSequence = [];
-var score = -1;
-var highscore;
+var score;
+var highscore = 0;
 var gameActive = false;
-var position;
 
 
 let yellowButton = document.getElementById('yellowButton');
@@ -11,6 +10,8 @@ let blueButton = document.getElementById('blueButton');
 let redButton = document.getElementById('redButton');
 let greenButton = document.getElementById('greenButton');
 let startButton = document.getElementById('startButton');
+let htmlScore = document.getElementById('score');
+let htmlHighscore = document.getElementById('highscore');
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -19,25 +20,13 @@ function getRandomInt(min, max) {
 }
 
 startButton.addEventListener("click", function() {
+  if (gameActive)
+    return;
   startButton.disabled = true;
   gameActive = true;
-  position = 0;
+  score = -1;
   nextLevel();
-  score = 0;
-  startGame();
 });
-
-function startGame() {
-  while (gameActive) {
-    displaySequence();
-    for (var i = 0; i < correctSequence.length; i++) {
-      userSequence(i);
-    }
-    nextLevel();
-    position = 0;
-    score++;
-  }
-}
 
 function displaySequence() {
   yellowButton.disabled = true;
@@ -45,68 +34,84 @@ function displaySequence() {
   redButton.disabled = true;
   greenButton.disabled = true;
 
-  setTimeout(() => {
-    for (var i = 0; i < correctSequence.length; i++) {
-      changeColor(correctSequence[i]);
-    }
-  }, 200);
+  var index = 0;
 
-  setTimeout(() => {
-    yellowButton.disabled = false;
-    blueButton.disabled = false;
-    redButton.disabled = false;
-    greenButton.disabled = false;
-  }, 1500);
+  var i1 = setInterval(
+    function() {
+      if (index >= correctSequence.length) {
+        clearInterval(i1);
+        yellowButton.disabled = false;
+        blueButton.disabled = false;
+        redButton.disabled = false;
+        greenButton.disabled = false;
+        return;
+      }
+
+      changeColor(correctSequence[index]);
+      index++;
+    }, 1000);
 }
 
-function userSequence(pos) {
-  yellowButton.addEventListener("click", function() {
-    console.log('1');
-    inputSequence.push('1');
+yellowButton.addEventListener("click", function() {
+  console.log('1');
+  inputSequence.push('1');
+  console.log(inputSequence);
+  console.log(correctSequence);
 
-    if (inputSequence[pos] != correctSequence[pos]) {
-      fail();
-    }
-  });
-  blueButton.addEventListener("click", function() {
-    console.log('2');
-    inputSequence.push('2');
+  if (inputSequence[inputSequence.length - 1] != correctSequence[inputSequence.length - 1]) {
+    fail();
+  } else if (inputSequence.length == correctSequence.length) {
+    nextLevel();
+  }
+});
+blueButton.addEventListener("click", function() {
+  console.log('2');
+  inputSequence.push('2');
 
-    if (inputSequence[pos] != correctSequence[pos]) {
-      fail();
-    }
-  });
-  redButton.addEventListener("click", function() {
-    console.log('3');
-    inputSequence.push('3');
+  if (inputSequence[inputSequence.length - 1] != correctSequence[inputSequence.length - 1]) {
+    fail();
+  } else if (inputSequence.length == correctSequence.length) {
+    nextLevel();
+  }
+});
+redButton.addEventListener("click", function() {
+  console.log('3');
+  inputSequence.push('3');
 
-    if (inputSequence[pos] != correctSequence[pos]) {
-      fail();
-    }
-  });
-  greenButton.addEventListener("click", function() {
-    console.log('4');
-    inputSequence.push('4');
+  if (inputSequence[inputSequence.length - 1] != correctSequence[inputSequence.length - 1]) {
+    fail();
+  } else if (inputSequence.length == correctSequence.length) {
+    nextLevel();
+  }
+});
+greenButton.addEventListener("click", function() {
+  console.log('4');
+  inputSequence.push('4');
 
-    if (inputSequence[pos] != correctSequence[pos]) {
-      fail();
-    }
-  });
-
-
-}
+  if (inputSequence[inputSequence.length - 1] != correctSequence[inputSequence.length - 1]) {
+    fail();
+  } else if (inputSequence.length == correctSequence.length) {
+    nextLevel();
+  }
+});
 
 function nextLevel() {
+  score++;
+  highscore = Math.max(score, highscore);
   var num = getRandomInt(1, 5);
   console.log(num);
   correctSequence.push(num);
+  displaySequence();
+  inputSequence = [];
+  htmlScore.innerHTML = "Score: " + score;
+  htmlHighscore.innerHTML = "Highscore: " + highscore;
 }
 
 function fail() {
   gameActive = false;
-  highscore = score;
   correctSequence = [];
   inputSequence = [];
+  startButton.disabled = false;
 }
 
 function changeColor(color) {
